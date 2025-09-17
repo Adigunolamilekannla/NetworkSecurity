@@ -3,5 +3,6 @@ pandas
 numpy
 pymango
 certifi
+pymongo[srv]
 
 #-e .
