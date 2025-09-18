@@ -6,7 +6,7 @@ from datetime import datetime
 LOG_FILE = f"{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
 
 # Create Logs directory if not exists
-logs_path = os.path.join(os.getcwd(), "Logs")
+logs_path = os.path.join(os.getcwd(), "logs")
 os.makedirs(logs_path, exist_ok=True)
 
 # Full log file path
