@@ -4,5 +4,8 @@ numpy
 pymango
 certifi
 pymongo[srv]
+dill
+scikit-lean
+pyaml
 
 #-e .

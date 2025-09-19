@@ -99,8 +99,8 @@ class DataInjection:
             dataframe = self.import_collection_as_data_frame()
             dataframe = self.export_data_into_feature_store(dataframe=dataframe)
             self.split_data_as_train_test(dataframe)
-            datainjectionartifacts = DataInjestionArtifacts(trained_file_path=self.data_injection_config.training_file_path,
-                                                            test_file_path=self.data_injection_config.testing_file_path)
+            datainjectionartifacts = DataInjestionArtifacts(training_file_path=self.data_injection_config.training_file_path,
+                                                            testing_file_path=self.data_injection_config.testing_file_path)
 
             return datainjectionartifacts
          except Exception as e:
