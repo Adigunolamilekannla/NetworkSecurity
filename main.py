@@ -1,11 +1,11 @@
 from networkSecurity.component.data_injection import DataInjection
 from networkSecurity.component.data_validation import DataValidation
-from networkSecurity.entity.config_enitity import TrainPipelineConfig,DataValidationConfig
+from networkSecurity.component.data_transformation import DataTransformation
+from networkSecurity.entity.config_enitity import TrainPipelineConfig,DataValidationConfig,DataTransformationConfig
 from networkSecurity.entity.config_enitity import DataInjectionConfig
 from networkSecurity.exception.custom_exeption import NetworkSecurityException
 from networkSecurity.logging.logger import logging
 import sys
-from networkSecurity.entity.artifacts_enitity import  DataInjestionArtifacts,DataValidationArtifacts
 
 if __name__ == "__main__":
     try:
@@ -23,6 +23,17 @@ if __name__ == "__main__":
         data_validation_artifact = data_validation.initiate_data_validation()
         logging.info("Data Validation Completed")
         print(data_validation_artifact) 
+
+
+
+
+        data_transformation_config = DataTransformationConfig(training_pipeline_config=trainpipelineconfig)
+        data_transformation = DataTransformation(data_validation_artifacts=data_validation_artifact,data_transformation_config=data_transformation_config)
+        logging.info("inicitate the data transformation")
+        data_transformation_artifacts = data_transformation.initiate_data_transformation()
+        logging.info("Data Transformation Completed")
+        print(data_validation_artifact) 
+
     except Exception as e:
         raise NetworkSecurityException(e,sys) 
     
