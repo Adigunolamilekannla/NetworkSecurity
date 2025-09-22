@@ -7,6 +7,5 @@ pymongo[srv]
 dill
 scikit-lean
 pyaml
-
-
+mlflow
 #-e .

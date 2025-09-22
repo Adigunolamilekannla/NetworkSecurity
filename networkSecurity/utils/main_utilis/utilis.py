@@ -5,6 +5,10 @@ import os,sys
 import dill
 import pickle
 import numpy as np
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import accuracy_score
+from networkSecurity.exception.custom_exeption import NetworkSecurityException
 
 
 def read_yaml(file_path:str) -> dict:
@@ -49,6 +53,58 @@ def save_object(file_path: str, obj: object) -> None:
             pickle.dump(obj, file_obj)
 
         logging.info("Exited the save_object method of mainUtils class")
+
+    except Exception as e:
+        raise NetworkSecurityException(e, sys)
+    
+
+def load_object(file_path:str,) -> object:
+    try:
+        if not os.path.exists(file_path):
+            raise Exception(f"The file {file_path} is not exists")
+        with open(file_path,"rb") as file_obj:
+            print(file_path)
+            return pickle.load(file_obj)
+    except Exception as e:
+        raise NetworkSecurityException(e,sys)
+
+
+def load_numpy_array_data(file_path:str) -> np.array:
+    try:
+        if not os.path.exists(file_path):
+            raise Exception(f"The file {file_path} is not exists")
+        with open(file_path,"rb") as file_obj:
+            print(file_path)
+            return np.load(file_obj)
+    except Exception as e:
+        raise NetworkSecurityException(e,sys)
+    
+
+
+def evaluate_model(x_train, y_train, x_test, y_test, models, params):
+    try:
+        report: dict = {}
+
+        for i in range(len(list(models))):
+            model = list(models.values())[i]
+            param = params[list(models.keys())[i]]
+
+            gs = GridSearchCV(model, param_grid=param, cv=3, n_jobs=-1, verbose=1)
+            gs.fit(X=x_train, y=y_train)
+
+            model.set_params(**gs.best_params_)
+            model.fit(x_train, y_train)
+
+            # Predictions
+            y_test_pred = model.predict(x_test)
+
+            # Accuracy scores
+            test_model_score = accuracy_score(y_true=y_test, y_pred=y_test_pred)
+
+            # Save test score in report
+            report[list(models.keys())[i]] = test_model_score
+
+        return report
 
     except Exception as e:
         raise NetworkSecurityException(e, sys)

@@ -4,7 +4,6 @@ from networkSecurity.entity.artifacts_enitity import DataTransformationArtifacts
 from networkSecurity.entity.config_enitity import DataTransformationConfig,DataInjectionConfig
 from networkSecurity.logging.logger import logging
 from networkSecurity.exception.custom_exeption import NetworkSecurityException
-import os
 import sys
 from sklearn.impute import KNNImputer
 from sklearn.pipeline import Pipeline
