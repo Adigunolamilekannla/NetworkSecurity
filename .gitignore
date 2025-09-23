@@ -3,3 +3,5 @@
 Network_Data/
 logs/
 Artifacts/
+mlruns/
+user_input_and_prediction/

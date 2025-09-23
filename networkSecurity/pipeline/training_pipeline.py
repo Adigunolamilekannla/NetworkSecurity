@@ -2,7 +2,9 @@ from networkSecurity.component.data_injection import DataInjection
 from networkSecurity.component.data_validation import DataValidation
 from networkSecurity.component.data_transformation import DataTransformation
 from networkSecurity.component.model_trainer import ModelTrainer
-
+from networkSecurity.constant.training_pipeline import TRAINING_BUCKET_NAME
+from networkSecurity.cloud.s3_syncer import S3sync
+import  os
 from networkSecurity.entity.config_enitity import (
     TrainPipelineConfig,
     DataInjectionConfig,
@@ -21,6 +23,7 @@ class TrainPipeline:
         try:
             logging.info("Initializing Training Pipeline")
             self.train_pipeline_config = TrainPipelineConfig()
+            self.s3_sync = S3sync()
 
             # Step configs
             self.data_injection_config = DataInjectionConfig(training_pipeline_config=self.train_pipeline_config)
@@ -31,6 +34,25 @@ class TrainPipeline:
             logging.info("Training Pipeline initialized successfully")
         except Exception as e:
             raise NetworkSecurityException(e, sys)
+        
+    def sync_artifacts_dir_to_s3(self):
+        try:
+            aws_bucket_url = f"s3://{TRAINING_BUCKET_NAME}/artifacts/{self.train_pipeline_config.timestamp}"
+            self.s3_sync.sync_folder_to_s3(folder=self.train_pipeline_config.artifact_dir,aws_bucket_url=aws_bucket_url)
+
+        except Exception as e:
+            raise NetworkSecurityException(e,sys)
+    
+    def sync_save_model_dir_to_s3(self):
+        try:
+            aws_bucket_url = f"s3://{TRAINING_BUCKET_NAME}/artifacts/{self.train_pipeline_config}"
+            os.makedirs(self.train_pipeline_config.model_dir,exist_ok=True)
+            self.s3_sync.sync_folder_to_s3(folder=self.train_pipeline_config.model_dir,aws_bucket_url=aws_bucket_url)
+
+
+        except Exception as e:
+            raise NetworkSecurityException(e,sys)
+
 
     def run_pipeline(self):
         try:
@@ -66,8 +88,17 @@ class TrainPipeline:
             logging.info("✅ Model Training completed")
 
             logging.info("🎉 Training Pipeline finished successfully")
-            return model_trainer_artifacts
+
+            self.sync_artifacts_dir_to_s3()
+            self.sync_save_model_dir_to_s3()
+
+            return model_trainer_artifacts   
 
         except Exception as e:
             logging.error("Error occurred while running Training Pipeline")
             raise NetworkSecurityException(e, sys)
+        
+if __name__ == "__main__":
+
+    pipeline = TrainPipeline()
+    artifacts = pipeline.run_pipeline()
